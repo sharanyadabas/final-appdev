@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import date, datetime
 
 db = SQLAlchemy()
 
@@ -26,7 +27,7 @@ class Task(db.Model):
     __tablename__ = "tasks"
     id = db.Column(db.Integer,primary_key=True,autoincrement=True)
     name = db.Column(db.String,nullable=False)
-    deadline = db.Column(db.String,nullable=False)
+    deadline = db.Column(db.DateTime,nullable=False)
     priority = db.Column(db.Integer,nullable=False)
     time_to_complete = db.Column(db.String,nullable=False)
     done = db.Column(db.Boolean,nullable=False)
@@ -34,7 +35,7 @@ class Task(db.Model):
 
     def __init__(self,**kwargs):
         self.name = kwargs.get("name","")
-        self.deadline = kwargs.get("deadline","") 
+        self.deadline = kwargs.get("deadline") 
         self.priority = kwargs.get("priority",0)
         self.time_to_complete = kwargs.get("time_to_complete","")       
         self.done = kwargs.get("done",False)
