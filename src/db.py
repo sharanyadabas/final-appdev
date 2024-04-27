@@ -33,7 +33,7 @@ class Task(db.Model):
     user_id = db.Column(db.Integer,db.ForeignKey("users.id"),nullable=False)
 
     def __init__(self,**kwargs):
-        self.name = kwargs.get("description","")
+        self.name = kwargs.get("name","")
         self.deadline = kwargs.get("deadline","") 
         self.priority = kwargs.get("priority",0)
         self.time_to_complete = kwargs.get("time_to_complete","")       
