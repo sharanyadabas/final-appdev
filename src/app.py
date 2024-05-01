@@ -1,6 +1,5 @@
 import json
 from flask import Flask, request
-import dao
 from db import db
 from db import Task, User
 from sqlalchemy import desc
@@ -33,7 +32,11 @@ def failure_response(message, code=404):
 # same priority, they are sorted by the soonest deadline.
 @app.route("/tasks/<int:user_id>/")
 def get_all_tasks(user_id):
-    tasks = Task.query.order_by(desc(Task.priority), Task.deadline).all()
+    user = Task.query.filter_by(id=user_id).first()
+    if user is None:
+        return failure_response("User not found!")
+    tasks = user.get("tasks", [])
+    return success_response(tasks)
 
 
 @app.route("/tasks/<int:task_id>/")

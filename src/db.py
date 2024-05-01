@@ -16,6 +16,9 @@ class User(db.Model):
         self.password = kwargs.get("password", "")
 
     def serialize(self):
+        tasks = [t.serialize() for t in self.tasks]
+        tasks = sorted(tasks, key=lambda task: -(task["priority"], task["deadline"]))
+
         return {
             "id": self.id,
             "name": self.name,
