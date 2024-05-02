@@ -18,18 +18,34 @@ with app.app_context():
 
 # generalized response formats
 def success_response(data, code=200):
-    return json.dumps({"success": True, "data": data}), code
+    return json.dumps(data), code
 
 
 def failure_response(message, code=404):
-    return json.dumps({"success": False, "error": message}), code
+    return json.dumps(message), code
 
 
 # user routes
 
 
+# Get all current users
+@app.route("/users/")
+def get_all_users():
+    users = [u.serialize() for u in Task.query.all()]
+    return success_response(users)
+
+
+# Get user based on user_id
+@app.route("/users/<int:user_id>")
+def get_user(user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        return failure_response("Course not found!")
+    return success_response(user.serialize())
+
+
 # Create a user
-@app.route("/api/users/", methods=["POST"])
+@app.route("/users/", methods=["POST"])
 def create_user():
     body = json.loads(request.data)
     new_user = User(name=body.get("name"), password=body.get("password"))
