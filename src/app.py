@@ -30,15 +30,16 @@ def failure_response(message, code=404):
 
 # Get all tasks from a user, sorted by priority (1-5 where 5 is highest). If tasks have the
 # same priority, they are sorted by the soonest deadline.
-@app.route("/tasks/<int:user_id>/")
-def get_all_tasks(user_id):
+@app.route("/tasks/users/<int:user_id>/")
+def get_user_tasks(user_id):
     user = Task.query.filter_by(id=user_id).first()
     if user is None:
         return failure_response("User not found!")
-    tasks = user.get("tasks", [])
+    tasks = user.tasks
     return success_response(tasks)
 
 
+## Get a task from a specific task_id
 @app.route("/tasks/<int:task_id>/")
 def get_task(task_id):
     task = Task.query.filter_by(id=task_id).first()
@@ -65,6 +66,34 @@ def create_task(user_id):
     db.session.add(new_task)
     db.session.commit()
     return success_response(new_task.serialize(), 201)
+
+
+# Updates a task depending on the fields that the user chooses to update
+@app.route("/tasks/<int:task_id>/", methods=["POST"])
+def update_task(task_id):
+    task = Task.query.filter_by(id=task_id).first()
+    if task is None:
+        return failure_response("Task not found!")
+
+    body = json.loads(request.data)
+    task.name = body.get("name", task.name)
+    task.deadline = body.get("deadline", task.deadline)
+    task.priority = body.get("priority", task.priority)
+    task.time_to_complete = body.get("time_to_complete", task.time_to_complete)
+
+    db.session.commit()
+    return success_response(task.serialize())
+
+
+@app.route("/tasks/<int:task_id>/", methods=["DELETE"])
+def delete_task(task_id):
+    task = Task.query.filter_by(id=task_id).first()
+    if task is None:
+        return failure_response("Course not found!")
+
+    db.session.delete(task)
+    db.session.commit()
+    return success_response(task.serialize())
 
 
 if __name__ == "__main__":
