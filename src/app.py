@@ -26,7 +26,26 @@ def failure_response(message, code=404):
 
 
 # user routes
+@app.route("/users/<int:user_id>/", methods=["DELETE"])
+def delete_user(user_id):
+    user = User.query.fliter_by(id=user_id).first()
+    if user is None:
+        return failure_response("User not found!")
+    db.session.delete(user)
+    db.session.commit()
+    return success_response(user.serialize())
 
+@app.route("/users/<int:user_id>/", methods=["POST"])
+def update_user(user_id):
+    user = User.query.fliter_by(id=user_id).first()
+    if user is None:
+        return failure_response("User not found!")
+    body = json.loads(request.data)
+    user.name = body.get("name", user.name)
+    user.password = body.get("password", user.password)
+
+    db.session.commit()
+    return success_response(user.serialize())
 
 # Get all current users
 @app.route("/users/")
