@@ -31,12 +31,12 @@ def failure_response(message, code=404):
 # Get all current users
 @app.route("/users/")
 def get_all_users():
-    users = [u.serialize() for u in Task.query.all()]
+    users = [u.serialize() for u in User.query.all()]
     return success_response(users)
 
 
 # Get user based on user_id
-@app.route("/users/<int:user_id>")
+@app.route("/users/<int:user_id>/")
 def get_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user is None:
@@ -61,7 +61,7 @@ def create_user():
 # same priority, they are sorted by the soonest deadline.
 @app.route("/tasks/users/<int:user_id>/")
 def get_user_tasks(user_id):
-    user = Task.query.filter_by(id=user_id).first()
+    user = User.query.filter_by(id=user_id).first()
     if user is None:
         return failure_response("User not found!")
     tasks = user.tasks
@@ -78,7 +78,7 @@ def get_task(task_id):
 
 
 # Create a task taking in the Name, Priority (1-5), Deadline, Time to complete, Completed
-@app.route("/tasks/<int:user_id>", methods=["POST"])
+@app.route("/tasks/<int:user_id>/", methods=["POST"])
 def create_task(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user is None:
