@@ -25,6 +25,19 @@ def failure_response(message, code=404):
     return json.dumps({"success": False, "error": message}), code
 
 
+# user routes
+
+
+# Create a user
+@app.route("/api/users/", methods=["POST"])
+def create_user():
+    body = json.loads(request.data)
+    new_user = User(name=body.get("name"), password=body.get("password"))
+    db.session.add(new_user)
+    db.session.commit()
+    return success_response(new_user.serialize(), 201)
+
+
 # task routes
 
 
@@ -85,6 +98,7 @@ def update_task(task_id):
     return success_response(task.serialize())
 
 
+# Delete a task based on its id
 @app.route("/tasks/<int:task_id>/", methods=["DELETE"])
 def delete_task(task_id):
     task = Task.query.filter_by(id=task_id).first()
