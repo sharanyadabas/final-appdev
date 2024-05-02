@@ -41,7 +41,7 @@ def get_all_users():
 def get_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user is None:
-        return failure_response("Course not found!")
+        return failure_response("User not found!")
     return success_response(user.serialize())
 
 
@@ -55,6 +55,7 @@ def create_user():
     return success_response(new_user.serialize(), 201)
 
 
+# Update the user's username or password
 @app.route("/users/<int:user_id>/", methods=["POST"])
 def update_user(user_id):
     user = User.query.filter_by(id=user_id).first()
@@ -68,6 +69,7 @@ def update_user(user_id):
     return success_response(user.serialize())
 
 
+# Delete the user given their id
 @app.route("/users/<int:user_id>/", methods=["DELETE"])
 def delete_user(user_id):
     user = User.query.filter_by(id=user_id).first()
