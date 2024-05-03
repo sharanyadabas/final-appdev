@@ -4,6 +4,7 @@ from db import db
 from db import Task, User
 from sqlalchemy import desc
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 db_filename = "todo.db"
@@ -57,11 +58,15 @@ def get_user_by_username(name):
 # Create a user
 @app.route("/users/", methods=["POST"])
 def create_user():
-    body = json.loads(request.data)
-    new_user = User(name=body.get("name"), password=body.get("password"))
-    db.session.add(new_user)
-    db.session.commit()
-    return success_response(new_user.serialize(), 201)
+    try:
+        body = json.loads(request.data)
+        new_user = User(name=body.get("name"), password=body.get("password"))
+        db.session.add(new_user)
+        db.session.commit()
+        return success_response(new_user.serialize(), 201)
+    except IntegrityError as e:
+        db.session.rollback()
+        return failure_response("Username already exists")
 
 
 # Update the user's username or password
