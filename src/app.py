@@ -45,6 +45,15 @@ def get_user(user_id):
     return success_response(user.serialize())
 
 
+# Get user based on username
+@app.route("/users/username/<string:name>/")
+def get_user_by_username(name):
+    user = User.query.filter_by(name=name).first()
+    if user is None:
+        return failure_response("User not found!")
+    return success_response(user.serialize())
+
+
 # Create a user
 @app.route("/users/", methods=["POST"])
 def create_user():
